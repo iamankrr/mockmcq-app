@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3b6cf6">
+<title>MCQ Test</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+ :root{
+  --bg:#f3f5fb;--card:#fff;--text:#1f2430;--muted:#6b7280;
+  --primary:#3b6cf6;--primary-soft:#eef2ff;--border:#e3e7ef;
+  --ok-bg:#dcfce7;--ok-bd:#22a35a;--bad-bg:#fee2e2;--bad-bd:#e03b3b;--warn:#f59e0b;
+ }
+ @media (prefers-color-scheme:dark){
+  :root{
+   --bg:#0f1218;--card:#1a1f2b;--text:#e8ebf2;--muted:#9aa3b5;
+   --primary:#5b86ff;--primary-soft:#232b45;--border:#2c3447;
+   --ok-bg:#12351f;--ok-bd:#2fbf6c;--bad-bg:#3b1618;--bad-bd:#ef5a5a;
+  }
+ }
+ *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+ html{scroll-behavior:smooth}
+ body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  max-width:720px;margin:0 auto;
+  padding:14px 14px calc(90px + env(safe-area-inset-bottom));
+  background:var(--bg);color:var(--text);line-height:1.5;font-size:16px;
+ }
+ h2{
+  margin:6px 0 14px;font-size:24px;font-weight:800;
+  background:linear-gradient(90deg,var(--primary),#8b5cf6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+ }
+ .card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:16px;margin:12px 0;box-shadow:0 2px 10px rgba(20,30,60,.06);
+ }
+ .qtext{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;font-weight:700}
+ .qno{
+  flex-shrink:0;min-width:30px;height:30px;padding:0 8px;border-radius:999px;
+  background:var(--primary-soft);color:var(--primary);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;
+ }
+ #count{
+  display:inline-block;min-width:34px;text-align:center;padding:1px 10px;
+  border-radius:999px;background:var(--primary-soft);color:var(--primary);font-weight:800;
+ }
+ #msg{color:var(--muted)}
+ #hist{font-size:14px;color:var(--muted)}
+ #hist b{color:var(--text)}
+ .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
+
+ button{
+  background:var(--primary);color:#fff;border:0;border-radius:12px;
+  padding:13px 18px;font-size:16px;font-weight:600;margin:5px 6px 5px 0;
+  cursor:pointer;box-shadow:0 2px 6px rgba(59,108,246,.3);
+  transition:transform .12s,filter .12s;
+ }
+ button:active{transform:scale(.97);filter:brightness(.92)}
+ button.alt{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none}
+ button.big{width:100%;padding:16px;font-size:18px}
+
+ input[type=file]{
+  width:100%;padding:12px;border:2px dashed var(--border);border-radius:12px;
+  background:var(--primary-soft);color:var(--text);font-size:14px;margin-top:6px;
+ }
+ input[type=number]{
+  width:84px;font-size:16px;padding:9px 10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg);color:var(--text);
+ }
+
+ label{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:13px 14px;margin:8px 0;border:1.5px solid var(--border);
+  border-radius:12px;cursor:pointer;background:var(--card);
+  transition:border-color .15s,background .15s;
+ }
+ label input[type=radio]{
+  margin-top:4px;width:18px;height:18px;flex-shrink:0;accent-color:var(--primary);
+ }
+ label:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+ label.ok,label.ok:has(input:checked){background:var(--ok-bg);border-color:var(--ok-bd)}
+ label.bad,label.bad:has(input:checked){background:var(--bad-bg);border-color:var(--bad-bd)}
+ label.ok::after{content:"✔";margin-left:auto;color:var(--ok-bd);font-weight:800}
+ label.bad::after{content:"✘";margin-left:auto;color:var(--bad-bd);font-weight:800}
+ label:has(input:disabled){cursor:default}
+
+ .warn{border-left:6px solid var(--warn)}
+ .warn small{color:var(--warn);font-weight:600}
+
+ /* sticky progress bar */
+ #bar{
+  position:sticky;top:0;z-index:10;margin:0 -14px 8px;padding:10px 14px;
+  background:var(--bg);border-bottom:1px solid var(--border);
+ }
+ #bar .t{display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:6px}
+ #bar .track{height:8px;border-radius:99px;background:var(--border);overflow:hidden}
+ #bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),#8b5cf6);transition:width .25s}
+
+ .score{
+  font-size:34px;font-weight:800;text-align:center;padding:26px 16px;
+  background:linear-gradient(135deg,var(--primary),#8b5cf6);color:#fff;border:0;
+ }
+ .score small{display:block;font-size:15px;font-weight:500;opacity:.9;margin-top:4px}
+
+ #subwrap{
+  position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));margin-top:14px;
+ }
+ #sub{box-shadow:0 6px 18px rgba(59,108,246,.45);margin:0}
+ .hide{display:none}
+</style>
+</head>
+<body>
+<h2>📝 MCQ Test</h2>
+
+<div id="home">
+ <div class="card">
+  <div><b>Question bank:</b> <span id="count">0</span> questions</div>
+  <div id="msg" style="margin:8px 0;font-size:14px"></div>
+  <div>Upload PDF:</div>
+  <input type="file" id="pdf" accept=".pdf" multiple>
+  <div class="row">Questions per test: <input type="number" id="nq" value="100" min="1"></div>
+  <button class="big" onclick="startTest()">▶ Start Test</button>
+  <div class="row">
+   <button class="alt" onclick="exportBank()">⬇ Export</button>
+   <button class="alt" onclick="document.getElementById('imp').click()">⬆ Import</button>
+   <button class="alt" onclick="clearBank()">🗑 Clear</button>
+  </div>
+  <input type="file" id="imp" accept=".json" class="hide">
+ </div>
+ <div class="card" id="hist"></div>
+</div>
+
+<div id="review" class="hide"></div>
+<div id="test" class="hide"></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const KEY='mcqBank',HK='mcqHist';
+let bank=JSON.parse(localStorage.getItem(KEY)||'[]');
+let hist=JSON.parse(localStorage.getItem(HK)||'[]');
+let paper=[],pending=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(bank));$('count').textContent=bank.length;$('nq').max=bank.length};
+function showHist(){
+ $('hist').innerHTML=hist.length
+  ?'<b>Previous scores:</b><br>'+hist.slice(-5).reverse().map(h=>`${h.d} → <b>${h.s}/${h.n}</b>`).join('<br>')
+  :'No tests taken yet.';
+}
+save();showHist();
+
+// ---------- PDF reading (bold detect) ----------
+async function readPdf(file){
+ const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+ const lines=[];
+ for(let p=1;p<=pdf.numPages;p++){
+  const page=await pdf.getPage(p);
+  await page.getOperatorList(); // loads fonts
+  const tc=await page.getTextContent();
+  const cache={};
+  const isBold=fn=>{
+   if(fn in cache)return cache[fn];
+   let b=false;
+   try{const f=page.commonObjs.get(fn);b=/bold|black|heavy|semibold|demi/i.test((f.name||'')+' '+(f.fallbackName||''))||!!f.bold}catch(e){}
+   return cache[fn]=b;
+  };
+  const rows=[];
+  for(const it of tc.items){
+   if(it.str==='')continue;
+   const y=Math.round(it.transform[5]);
+   let r=rows.find(r=>Math.abs(r.y-y)<=3);
+   if(!r){r={y,items:[]};rows.push(r)}
+   r.items.push({x:it.transform[4],s:it.str,b:isBold(it.fontName)});
+  }
+  rows.sort((a,b)=>b.y-a.y);
+  for(const r of rows){
+   r.items.sort((a,b)=>a.x-b.x);
+   let t='',f='';
+   for(const i of r.items){t+=i.s;f+=(i.b?'1':'0').repeat(i.s.length)}
+   const st=t.length-t.trimStart().length,t2=t.trim();
+   if(t2)lines.push({t:t2,f:f.slice(st,st+t2.length)});
+  }
+ }
+ return lines;
+}
+
+// ---------- Parsing ----------
+const SKIP=/^(wildlife ecology|week\s*\d+\s*assignment)/i;
+const qRe=/^(?:Q\.?\s*)?(\d{1,3})\s*([\.\)])?\s+(\S.*)$/i;
+const oRe=/^(\(?([a-dA-D])[\.\)]\s*)(.*)$/;
+
+// splits lines glued together at page breaks:
+// "time(d) Energy", "comfort6. Thomas", "method1 A guild", "dynamicsWildlife Ecology"
+function splitLine(l){
+ const pts=new Set();let m;
+ const rules=[
+  [/([^\s\(])(\([a-dA-D]\)\s)/g,1],
+  [/([a-z\)])(\d{1,2}[\.\)]\s+[A-Z“"])/g,1],
+  [/([a-z])(\d{1,2}\s+[A-Z])/g,1],
+  [/Wildlife Ecology/g,0]
+ ];
+ for(const [re,off] of rules){while((m=re.exec(l.t)))pts.add(m.index+off)}
+ const arr=[0,...[...pts].filter(p=>p>0).sort((a,b)=>a-b),l.t.length];
+ const out=[];
+ for(let i=0;i<arr.length-1;i++){
+  const a=arr[i],b=arr[i+1];
+  const seg=l.t.slice(a,b);
+  const lead=seg.length-seg.trimStart().length;
+  const t=seg.trim();
+  if(t)out.push({t,f:l.f.slice(a+lead,a+lead+t.length)});
+ }
+ return out;
+}
+function boldOf(t,f,from){
+ let n=0,b=0;
+ for(let i=from;i<t.length;i++){if(/\s/.test(t[i]))continue;n++;if(f[i]==='1')b++}
+ return n>0&&b/n>0.5;
+}
+
+function parse(rawLines){
+ const lines=[];
+ for(const l of rawLines){
+  for(const s of splitLine(l)){if(!SKIP.test(s.t))lines.push(s)}
+ }
+ const items=[],bad=[];
+ let q=null;
+ const flush=()=>{
+  if(!q)return;
+  if(q.o.length===4&&!q.broken){
+   const marked=q.o.map((o,i)=>o.b?i:-1).filter(i=>i>=0);
+   items.push({q:q.q.trim(),o:q.o.map(o=>o.t.trim()),a:marked.length===1?marked[0]:-1,n:0});
+  }else bad.push((q.q||'(question text missing)').slice(0,60));
+  q=null;
+ };
+ for(const l of lines){
+  const om=oRe.exec(l.t);
+  const letter=q?'abcd'[q.o.length]:null;
+  if(q&&om&&q.o.length<4&&om[2].toLowerCase()===letter){
+   q.o.push({t:om[3],b:boldOf(l.t,l.f,om[1].length)});q.last='o';continue;
+  }
+  if(q&&om&&q.o.length===4&&om[2].toLowerCase()==='a'){
+   flush();q={q:'',o:[{t:om[3],b:boldOf(l.t,l.f,om[1].length)}],last:'o',broken:true};continue;
+  }
+  const qm=qRe.exec(l.t);
+  if(qm&&(!q||q.o.length===4||qm[2])){
+   flush();q={q:qm[3],o:[],last:'q'};continue;
+  }
+  if(q){
+   if(q.last==='o'&&q.o.length){const o=q.o[q.o.length-1];o.t+=' '+l.t;o.b=o.b||boldOf(l.t,l.f,0)}
+   else q.q+=' '+l.t;
+  }
+ }
+ flush();
+ return {items,bad};
+}
+
+// ---------- Upload -> Review ----------
+$('pdf').onchange=async e=>{
+ pending=[];let badAll=[];
+ $('msg').textContent='Reading PDF...';
+ try{
+  for(const f of e.target.files){
+   const {items,bad}=parse(await readPdf(f));
+   pending.push(...items);
+   badAll.push(...bad);
+  }
+ }catch(err){$('msg').textContent='Error: '+err.message;return}
+ e.target.value='';
+ $('msg').textContent='';
+ renderReview(badAll);
+};
+
+function renderReview(bad){
+ const flagged=pending.filter(p=>p.a<0).length;
+ let h=`<div class="card"><b>${pending.length}</b> questions found.<br>
+  ✅ Answer detected from bold: <b>${pending.length-flagged}</b><br>
+  ⚠️ Needs manual selection: <b>${flagged}</b>`+
+  (bad.length?`<br>❌ Could not parse (${bad.length}):<br><small>${bad.map(esc).join('<br>')}</small>`:'')+
+  `<div class="row"><button onclick="saveReview()">💾 Save all</button><button class="alt" onclick="cancelReview()">Cancel</button></div></div>`;
+ pending.forEach((p,i)=>{
+  h+=`<div class="card ${p.a<0?'warn':''}"><div class="qtext"><span class="qno">${i+1}</span><span>${esc(p.q)}</span></div>`;
+  p.o.forEach((o,j)=>h+=`<label class="${p.a===j?'ok':''}"><input type="radio" name="r${i}" ${p.a===j?'checked':''} onchange="pending[${i}].a=${j};setOk(${i},${j})"> <span>${'ABCD'[j]}. ${esc(o)}</span></label>`);
+  if(p.a<0)h+='<small>⚠️ Bold answer not found, please select the correct option</small>';
+  h+='</div>';
+ });
+ h+=`<button class="big" onclick="saveReview()">💾 Save all</button>`;
+ $('review').innerHTML=h;
+ $('home').classList.add('hide');$('review').classList.remove('hide');scrollTo(0,0);
+}
+function setOk(i,j){
+ document.querySelectorAll(`input[name=r${i}]`).forEach((r,k)=>r.parentElement.classList.toggle('ok',k===j));
+}
+function saveReview(){
+ const ok=pending.filter(p=>p.a>=0),skip=pending.length-ok.length;
+ if(skip&&!confirm(`${skip} questions have no answer selected and will not be saved. Continue?`))return;
+ ok.forEach(p=>bank.push({q:p.q,o:p.o,a:p.a,n:0}));
+ save();cancelReview();
+ $('msg').textContent=`✅ ${ok.length} questions saved.`;
+}
+function cancelReview(){
+ pending=[];$('review').classList.add('hide');$('home').classList.remove('hide');
+}
+
+// ---------- Test ----------
+function startTest(){
+ if(!bank.length){alert('Please upload a PDF first');return}
+ const N=Math.min(parseInt($('nq').value)||100,bank.length);
+ // questions shown fewer times get priority, rest is random
+ const pick=[...bank].sort((a,b)=>(a.n+Math.random())-(b.n+Math.random())).slice(0,N);
+ pick.forEach(x=>x.n++);save();
+ const p=pick.sort(()=>Math.random()-.5).map(x=>{
+  const idx=[0,1,2,3].sort(()=>Math.random()-.5);
+  return {q:x.q,o:idx.map(i=>x.o[i]),a:idx.indexOf(x.a),sel:-1};
+ });
+ renderPaper(p,true);
+}
+function renderPaper(p,record){
+ paper=p;window.recordScore=record;
+ $('home').classList.add('hide');$('test').classList.remove('hide');
+ let h=`<div id="bar"><div class="t"><span id="barT">0 / ${paper.length} answered</span><span id="barP">0%</span></div><div class="track"><div class="fill" id="barF"></div></div></div>`;
+ paper.forEach((x,i)=>{
+  h+=`<div class="card"><div class="qtext"><span class="qno">${i+1}</span><span>${esc(x.q)}</span></div>`;
+  x.o.forEach((o,j)=>h+=`<label id="l${i}_${j}"><input type="radio" name="q${i}" onchange="pick(${i},${j})"> <span>${'ABCD'[j]}. ${esc(o)}</span></label>`);
+  h+='</div>';
+ });
+ h+='<div id="subwrap"><button id="sub" class="big" onclick="submitTest()">✅ Submit</button></div>';
+ $('test').innerHTML=h;scrollTo(0,0);
+}
+function pick(i,j){
+ paper[i].sel=j;
+ const d=paper.filter(x=>x.sel>=0).length,pc=Math.round(d/paper.length*100);
+ $('barT').textContent=`${d} / ${paper.length} answered`;
+ $('barP').textContent=pc+'%';
+ $('barF').style.width=pc+'%';
+}
+function submitTest(){
+ const left=paper.filter(x=>x.sel<0).length;
+ if(!confirm(left?`${left} questions are unanswered. Submit anyway?`:'Submit the test?'))return;
+ let s=0;
+ paper.forEach((p,i)=>{
+  if(p.sel===p.a)s++;
+  document.getElementById(`l${i}_${p.a}`).classList.add('ok');
+  if(p.sel>=0&&p.sel!==p.a)document.getElementById(`l${i}_${p.sel}`).classList.add('bad');
+  document.querySelectorAll(`input[name=q${i}]`).forEach(r=>r.disabled=true);
+ });
+ if(window.recordScore){
+  hist.push({d:new Date().toLocaleString('en-IN'),s,n:paper.length});
+  localStorage.setItem(HK,JSON.stringify(hist));
+ }
+ const wrong=paper.length-s-left,pct=Math.round(s/paper.length*100);
+ $('bar').outerHTML=`<div class="card score">Score: ${s} / ${paper.length}<small>${pct}% • ✔ ${s} correct • ✘ ${wrong} wrong • ${left} skipped</small></div>`;
+ const wrongList=paper.filter(p=>p.sel!==p.a);
+ $('subwrap').innerHTML=
+  (wrongList.length?`<button class="big" onclick="retryWrong()">🔁 Retry wrong/skipped only (${wrongList.length})</button>`:'')+
+  `<button class="big alt" onclick="location.reload()">🏠 Home</button>`;
+ scrollTo(0,0);
+}
+function retryWrong(){
+ const w=paper.filter(p=>p.sel!==p.a).map(p=>{
+  const idx=[0,1,2,3].sort(()=>Math.random()-.5);
+  return {q:p.q,o:idx.map(i=>p.o[i]),a:idx.indexOf(p.a),sel:-1};
+ });
+ renderPaper(w,false);
+}
+
+// ---------- Export / Import / Clear ----------
+function exportBank(){
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([JSON.stringify(bank)],{type:'application/json'}));
+ a.download='mcq-bank.json';a.click();
+}
+$('imp').onchange=async e=>{
+ const d=JSON.parse(await e.target.files[0].text());
+ d.forEach(x=>bank.push(x));
+ save();$('msg').textContent=`Import complete ✅ (${d.length} questions)`;e.target.value='';
+};
+function clearBank(){if(confirm('Delete all questions?')){bank=[];save()}}
+</script>
+</body>
+</html>
