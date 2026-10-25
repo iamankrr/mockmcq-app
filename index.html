@@ -253,7 +253,18 @@
 <div id="test" class="hide"></div>
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// ---------- pdf.js worker fix (works on iPhone Safari / mobile) ----------
+(function(){
+ const WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ try{
+  // cross-origin workers are blocked on mobile Safari, so wrap it in a same-origin Blob
+  const blob=new Blob([`importScripts("${WORKER_URL}");`],{type:'text/javascript'});
+  pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(blob);
+ }catch(e){
+  pdfjsLib.GlobalWorkerOptions.workerSrc=WORKER_URL;
+ }
+})();
+
 const KEY='mcqBank',HK='mcqHist';
 let bank=JSON.parse(localStorage.getItem(KEY)||'[]');
 let hist=JSON.parse(localStorage.getItem(HK)||'[]');
