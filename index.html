@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#3b6cf6">
 <title>MCQ Test</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
 <style>
  :root{
   --bg:#f3f5fb;--card:#fff;--text:#1f2430;--muted:#6b7280;
@@ -253,17 +254,9 @@
 <div id="test" class="hide"></div>
 
 <script>
-// ---------- pdf.js worker fix (works on iPhone Safari / mobile) ----------
-(function(){
- const WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
- try{
-  // cross-origin workers are blocked on mobile Safari, so wrap it in a same-origin Blob
-  const blob=new Blob([`importScripts("${WORKER_URL}");`],{type:'text/javascript'});
-  pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(blob);
- }catch(e){
-  pdfjsLib.GlobalWorkerOptions.workerSrc=WORKER_URL;
- }
-})();
+// worker script is already loaded via <script> tag above,
+// so if the real Worker fails (mobile Safari), pdf.js falls back to the main thread
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const KEY='mcqBank',HK='mcqHist';
 let bank=JSON.parse(localStorage.getItem(KEY)||'[]');
