@@ -11,69 +11,141 @@
   --bg:#f3f5fb;--card:#fff;--text:#1f2430;--muted:#6b7280;
   --primary:#3b6cf6;--primary-soft:#eef2ff;--border:#e3e7ef;
   --ok-bg:#dcfce7;--ok-bd:#22a35a;--bad-bg:#fee2e2;--bad-bd:#e03b3b;--warn:#f59e0b;
+  --shadow:0 4px 24px rgba(30,45,90,.08);
  }
  @media (prefers-color-scheme:dark){
   :root{
    --bg:#0f1218;--card:#1a1f2b;--text:#e8ebf2;--muted:#9aa3b5;
    --primary:#5b86ff;--primary-soft:#232b45;--border:#2c3447;
    --ok-bg:#12351f;--ok-bd:#2fbf6c;--bad-bg:#3b1618;--bad-bd:#ef5a5a;
+   --shadow:0 4px 24px rgba(0,0,0,.35);
   }
  }
  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
  html{scroll-behavior:smooth}
  body{
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  max-width:720px;margin:0 auto;
+  max-width:640px;margin:0 auto;
   padding:14px 14px calc(90px + env(safe-area-inset-bottom));
-  background:var(--bg);color:var(--text);line-height:1.5;font-size:16px;
+  background:
+   radial-gradient(600px 300px at 90% -80px,rgba(139,92,246,.18),transparent 70%),
+   radial-gradient(500px 280px at -10% -60px,rgba(59,108,246,.18),transparent 70%),
+   var(--bg);
+  background-attachment:fixed;
+  color:var(--text);line-height:1.5;font-size:16px;
  }
- h2{
-  margin:6px 0 14px;font-size:24px;font-weight:800;
+
+ /* ---------- header ---------- */
+ .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 18px}
+ .brand{display:flex;align-items:center;gap:12px;min-width:0}
+ .logo{
+  width:46px;height:46px;border-radius:14px;flex-shrink:0;color:#fff;
+  background:linear-gradient(135deg,var(--primary),#8b5cf6);
+  display:grid;place-items:center;box-shadow:0 8px 18px rgba(59,108,246,.35);
+ }
+ .logo svg{width:24px;height:24px}
+ h1{
+  margin:0;font-size:22px;font-weight:800;letter-spacing:-.3px;line-height:1.2;
   background:linear-gradient(90deg,var(--primary),#8b5cf6);
   -webkit-background-clip:text;background-clip:text;color:transparent;
  }
- .card{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:16px;margin:12px 0;box-shadow:0 2px 10px rgba(20,30,60,.06);
+ .brand p{margin:0;font-size:12.5px;color:var(--muted)}
+ .social{display:flex;gap:8px;align-items:center}
+ .social a{
+  color:var(--primary);display:grid;place-items:center;width:42px;height:42px;
+  border-radius:13px;background:var(--card);border:1px solid var(--border);
+  box-shadow:var(--shadow);transition:transform .15s,background .15s;
  }
+ .social a:hover{transform:translateY(-2px);background:var(--primary-soft)}
+ .social a:active{transform:scale(.93)}
+ .social svg{width:22px;height:22px;display:block}
+
+ /* ---------- cards ---------- */
+ .card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:18px;margin:14px 0;box-shadow:var(--shadow);
+ }
+ .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+ .stat{background:var(--primary-soft);border-radius:16px;padding:14px 6px;text-align:center}
+ .stat span{display:block;font-size:26px;font-weight:800;color:var(--primary);line-height:1.1}
+ .stat small{font-size:11.5px;color:var(--muted);font-weight:600}
+ #msg{color:var(--muted);margin:12px 0 0;font-size:14px}
+ #msg:empty{display:none}
+
+ .drop{
+  margin-top:16px;border:2px dashed var(--border);border-radius:18px;
+  padding:22px 14px;text-align:center;cursor:pointer;background:var(--primary-soft);
+  transition:border-color .15s,transform .12s;
+ }
+ .drop:hover{border-color:var(--primary)}
+ .drop:active{transform:scale(.985)}
+ .drop svg{width:30px;height:30px;color:var(--primary);margin-bottom:4px}
+ .drop b{display:block;font-size:16px}
+ .drop small{color:var(--muted);font-size:13px}
+
+ .setting{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 0}
+ .setting b{display:block;font-size:15px}
+ .setting small{color:var(--muted);font-size:12.5px}
+ .stepper{display:flex;align-items:center;gap:6px}
+ .stepper button{width:40px;height:40px;padding:0;margin:0;font-size:20px;border-radius:12px;line-height:1}
+ .stepper input{
+  width:64px;height:40px;text-align:center;font-size:16px;font-weight:700;
+  border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);
+  -moz-appearance:textfield;
+ }
+ .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+ .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+ .actions button{
+  margin:0;padding:12px 6px;display:flex;flex-direction:column;align-items:center;
+  gap:4px;font-size:13px;border-radius:14px;
+ }
+ .actions svg{width:20px;height:20px}
+ .danger{color:var(--bad-bd)!important}
+
+ /* ---------- history ---------- */
+ .h-title{font-weight:800;font-size:15px;margin-bottom:8px}
+ .h-row{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 0;border-top:1px solid var(--border);font-size:13.5px;color:var(--muted);
+ }
+ .pill{padding:4px 10px;border-radius:999px;font-size:13px;white-space:nowrap}
+ .pill.g{background:var(--ok-bg);color:var(--ok-bd)}
+ .pill.y{background:#fef3c7;color:#b45309}
+ .pill.r{background:var(--bad-bg);color:var(--bad-bd)}
+ .empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+ /* ---------- buttons ---------- */
+ button{
+  background:var(--primary);color:#fff;border:0;border-radius:14px;
+  padding:13px 18px;font-size:16px;font-weight:600;margin:5px 6px 5px 0;
+  cursor:pointer;box-shadow:0 4px 12px rgba(59,108,246,.3);
+  transition:transform .12s,filter .12s;
+ }
+ button:active{transform:scale(.97);filter:brightness(.92)}
+ button.alt{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none}
+ button.big{
+  width:100%;padding:16px;font-size:18px;display:flex;justify-content:center;
+  align-items:center;gap:8px;
+ }
+ button.big svg{width:20px;height:20px}
+ #startBtn{
+  margin:0;background:linear-gradient(135deg,var(--primary),#8b5cf6);
+  box-shadow:0 10px 24px rgba(91,70,246,.4);
+ }
+ .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
+
+ /* ---------- test / review ---------- */
  .qtext{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;font-weight:700}
  .qno{
   flex-shrink:0;min-width:30px;height:30px;padding:0 8px;border-radius:999px;
   background:var(--primary-soft);color:var(--primary);
   display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;
  }
- #count{
-  display:inline-block;min-width:34px;text-align:center;padding:1px 10px;
-  border-radius:999px;background:var(--primary-soft);color:var(--primary);font-weight:800;
- }
- #msg{color:var(--muted)}
- #hist{font-size:14px;color:var(--muted)}
- #hist b{color:var(--text)}
- .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
-
- button{
-  background:var(--primary);color:#fff;border:0;border-radius:12px;
-  padding:13px 18px;font-size:16px;font-weight:600;margin:5px 6px 5px 0;
-  cursor:pointer;box-shadow:0 2px 6px rgba(59,108,246,.3);
-  transition:transform .12s,filter .12s;
- }
- button:active{transform:scale(.97);filter:brightness(.92)}
- button.alt{background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none}
- button.big{width:100%;padding:16px;font-size:18px}
-
- input[type=file]{
-  width:100%;padding:12px;border:2px dashed var(--border);border-radius:12px;
-  background:var(--primary-soft);color:var(--text);font-size:14px;margin-top:6px;
- }
- input[type=number]{
-  width:84px;font-size:16px;padding:9px 10px;border-radius:10px;
-  border:1px solid var(--border);background:var(--bg);color:var(--text);
- }
-
  label{
   display:flex;align-items:flex-start;gap:10px;
   padding:13px 14px;margin:8px 0;border:1.5px solid var(--border);
-  border-radius:12px;cursor:pointer;background:var(--card);
+  border-radius:14px;cursor:pointer;background:var(--card);
   transition:border-color .15s,background .15s;
  }
  label input[type=radio]{
@@ -89,7 +161,6 @@
  .warn{border-left:6px solid var(--warn)}
  .warn small{color:var(--warn);font-weight:600}
 
- /* sticky progress bar */
  #bar{
   position:sticky;top:0;z-index:10;margin:0 -14px 8px;padding:10px 14px;
   background:var(--bg);border-bottom:1px solid var(--border);
@@ -104,31 +175,77 @@
  }
  .score small{display:block;font-size:15px;font-weight:500;opacity:.9;margin-top:4px}
 
- #subwrap{
-  position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));margin-top:14px;
- }
+ #subwrap{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom));margin-top:14px}
  #sub{box-shadow:0 6px 18px rgba(59,108,246,.45);margin:0}
  .hide{display:none}
 </style>
 </head>
 <body>
-<h2>📝 MCQ Test</h2>
+
+<header class="top">
+ <div class="brand">
+  <div class="logo">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
+  </div>
+  <div>
+   <h1>MCQ Test</h1>
+   <p>Practice from your own PDFs</p>
+  </div>
+ </div>
+ <div class="social">
+  <a href="https://www.linkedin.com/in/iamankrr/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+  </a>
+  <a href="https://github.com/iamankrr" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+  </a>
+ </div>
+</header>
 
 <div id="home">
  <div class="card">
-  <div><b>Question bank:</b> <span id="count">0</span> questions</div>
-  <div id="msg" style="margin:8px 0;font-size:14px"></div>
-  <div>Upload PDF:</div>
-  <input type="file" id="pdf" accept=".pdf" multiple>
-  <div class="row">Questions per test: <input type="number" id="nq" value="100" min="1"></div>
-  <button class="big" onclick="startTest()">▶ Start Test</button>
-  <div class="row">
-   <button class="alt" onclick="exportBank()">⬇ Export</button>
-   <button class="alt" onclick="document.getElementById('imp').click()">⬆ Import</button>
-   <button class="alt" onclick="clearBank()">🗑 Clear</button>
+  <div class="stats">
+   <div class="stat"><span id="count">0</span><small>Questions</small></div>
+   <div class="stat"><span id="tests">0</span><small>Tests taken</small></div>
+   <div class="stat"><span id="best">0%</span><small>Best score</small></div>
+  </div>
+  <div id="msg"></div>
+
+  <div class="drop" onclick="document.getElementById('pdf').click()">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+   <b>Upload PDF</b>
+   <small>Tap to choose one or more PDFs</small>
+  </div>
+  <input type="file" id="pdf" accept=".pdf" multiple class="hide">
+
+  <div class="setting">
+   <div><b>Questions per test</b><small>Choose the test length</small></div>
+   <div class="stepper">
+    <button class="alt" onclick="stepNq(-10)">−</button>
+    <input type="number" id="nq" value="100" min="1">
+    <button class="alt" onclick="stepNq(10)">+</button>
+   </div>
+  </div>
+
+  <button id="startBtn" class="big" onclick="startTest()">
+   <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+   Start Test
+  </button>
+
+  <div class="actions">
+   <button class="alt" onclick="exportBank()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>Export
+   </button>
+   <button class="alt" onclick="document.getElementById('imp').click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 20h16"/></svg>Import
+   </button>
+   <button class="alt danger" onclick="clearBank()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>Clear
+   </button>
   </div>
   <input type="file" id="imp" accept=".json" class="hide">
  </div>
+
  <div class="card" id="hist"></div>
 </div>
 
@@ -144,10 +261,21 @@ let paper=[],pending=[];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const save=()=>{localStorage.setItem(KEY,JSON.stringify(bank));$('count').textContent=bank.length;$('nq').max=bank.length};
+
 function showHist(){
- $('hist').innerHTML=hist.length
-  ?'<b>Previous scores:</b><br>'+hist.slice(-5).reverse().map(h=>`${h.d} → <b>${h.s}/${h.n}</b>`).join('<br>')
-  :'No tests taken yet.';
+ $('tests').textContent=hist.length;
+ const best=hist.length?Math.max(...hist.map(h=>Math.round(h.s/h.n*100))):0;
+ $('best').textContent=best+'%';
+ $('hist').innerHTML='<div class="h-title">Recent scores</div>'+(hist.length
+  ?hist.slice(-5).reverse().map(h=>{
+    const p=Math.round(h.s/h.n*100);
+    return `<div class="h-row"><span>${h.d}</span><b class="pill ${p>=70?'g':p>=40?'y':'r'}">${h.s}/${h.n} · ${p}%</b></div>`;
+   }).join('')
+  :'<div class="empty">No tests taken yet. Start your first one!</div>');
+}
+function stepNq(d){
+ const el=$('nq'),max=bank.length||1000;
+ el.value=Math.max(1,Math.min(max,(parseInt(el.value)||0)+d));
 }
 save();showHist();
 
